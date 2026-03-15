@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Estudio Jurídico V&M — Accidentes de Tránsito</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0f2044;--navy-mid:#1a3460;--navy-light:#2a4a80;
+  --green:#22c55e;--green-dk:#16a34a;--teal:#0d7c66;--teal-lt:#e6f7f4;
+  --bg:#f4f6fb;--white:#fff;--text:#0f2044;--muted:#6b7280;--border:#e2e8f0;
+  --r-sm:8px;--r-md:14px;--r-lg:20px;
+  --shadow-sm:0 1px 3px rgba(15,32,68,.08);--shadow-md:0 4px 16px rgba(15,32,68,.12);
+  --font-d:'Playfair Display',serif;--font-b:'DM Sans',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--font-b);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* LAYOUT */
+#app{min-height:100vh;display:flex;flex-direction:column;max-width:500px;margin:0 auto;background:var(--bg);position:relative}
+@media(min-width:768px){
+  #app{max-width:100%;flex-direction:row;flex-wrap:wrap;align-items:flex-start}
+  #app > *{flex:1 1 100%}
+}
+.page{display:none;flex-direction:column;min-height:100vh;padding-bottom:76px}
+.page.active{display:flex}
+.section{padding:24px 20px;max-width:600px;width:100%;margin:0 auto}
+@media(min-width:768px){.section{padding:36px 32px;max-width:100%}}
+
+/* TYPOGRAPHY */
+h1,h2,h3{font-family:var(--font-d);line-height:1.15}
+
+/* BUTTONS */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-b);font-weight:600;font-size:1rem;padding:15px 24px;border-radius:var(--r-md);border:none;cursor:pointer;transition:all .2s;width:100%;text-decoration:none}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:var(--green-dk);transform:translateY(-1px);box-shadow:0 6px 20px rgba(34,197,94,.35)}
+.btn-navy{background:var(--navy);color:#fff}.btn-navy:hover{background:var(--navy-mid);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--navy);border:2px solid var(--navy)}.btn-outline:hover{background:var(--navy);color:#fff}
+.btn-dark{background:#111827;color:#fff}.btn-dark:hover{background:#1f2937}
+
+/* TOP NAV */
+.top-nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:var(--shadow-sm)}
+.top-nav-back{width:38px;height:38px;border-radius:9px;border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;color:var(--navy);transition:all .2s}
+.top-nav-back:hover{background:var(--bg)}
+.top-nav-title{font-family:var(--font-b);font-weight:600;font-size:.95rem;color:var(--navy)}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;height:68px;background:#fff;border-top:1px solid var(--border);display:flex;align-items:center;z-index:100;box-shadow:0 -2px 12px rgba(15,32,68,.06)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;cursor:pointer;background:none;border:none;color:var(--muted);font-family:var(--font-b);font-size:.7rem;font-weight:500;transition:color .15s;border-radius:8px}
+.nav-item.active{color:var(--navy)}
+.nav-item svg{width:22px;height:22px;stroke-width:1.8}
+@media(min-width:500px){.bottom-nav{max-width:100%}}
+
+/* HERO BANNER */
+.hero-banner{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 60%,#1e4080 100%);padding:44px 24px 36px;position:relative;overflow:hidden}
+.hero-badge{display:inline-block;background:var(--green);color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:12px}
+.hero-title{font-family:var(--font-d);font-size:clamp(1.8rem,6vw,2.6rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:10px}
+.hero-sub{color:rgba(255,255,255,.72);font-size:.92rem;line-height:1.6}
+.hero-wm{position:absolute;bottom:8px;right:20px;font-family:var(--font-d);font-size:3rem;font-weight:900;color:rgba(255,255,255,.08);pointer-events:none;user-select:none}
+.hero-scale{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:6rem;opacity:.07;pointer-events:none}
+
+/* FEATURE CARD */
+.feature-card{display:flex;align-items:flex-start;gap:14px;background:#fff;border-radius:var(--r-md);padding:16px 18px;border:1px solid var(--border);box-shadow:var(--shadow-sm);transition:all .2s}
+.feature-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.f-icon{width:46px;height:46px;min-width:46px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.f-title{font-family:var(--font-b);font-size:.95rem;font-weight:600;color:var(--text);margin-bottom:3px}
+.f-desc{font-size:.83rem;color:var(--muted);line-height:1.5}
+.features-grid{display:flex;flex-direction:column;gap:10px}
+@media(min-width:640px){.features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}}
+@media(min-width:1024px){.features-grid{grid-template-columns:repeat(4,1fr)}}
+
+/* QUOTE */
+.quote-block{background:#fff;border-left:4px solid var(--teal);border-radius:0 var(--r-md) var(--r-md) 0;padding:18px 22px;font-style:italic;color:var(--muted);line-height:1.7;font-size:.92rem;box-shadow:var(--shadow-sm)}
+
+/* FAB */
+.fab{position:fixed;bottom:82px;right:18px;width:50px;height:50px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(34,197,94,.4);cursor:pointer;border:none;transition:transform .2s,box-shadow .2s;z-index:50;font-size:1.3rem}
+.fab:hover{transform:scale(1.1);box-shadow:0 6px 24px rgba(34,197,94,.5)}
+
+/* HOME PAGE */
+.home-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#fff;border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-logo{width:42px;height:42px;border-radius:11px;border:2px solid var(--navy);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--navy)}
+.brand-name{font-family:var(--font-d);font-size:1.05rem;font-weight:700;color:var(--navy);line-height:1}
+.brand-sub{font-size:.62rem;font-weight:600;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.home-hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 24px 16px}
+.home-icon{width:78px;height:78px;background:#e2e8f0;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:22px;font-size:2.2rem;position:relative}
+.alert-dot{position:absolute;top:5px;right:5px;width:22px;height:22px;background:var(--navy);color:#fff;border-radius:50%;font-size:.68rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.home-title{font-size:clamp(1.8rem,6vw,2.6rem);font-weight:900;color:var(--navy);line-height:1.15;margin-bottom:14px}
+.home-desc{font-size:.95rem;color:var(--muted);line-height:1.65;max-width:360px}
+.option-card{display:flex;align-items:center;gap:14px;background:#fff;border:1.5px solid var(--border);border-radius:var(--r-md);padding:16px 18px;cursor:pointer;transition:all .2s;text-align:left;width:100%}
+.option-card:hover{border-color:var(--navy);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.option-icon{width:42px;height:42px;min-width:42px;border-radius:11px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.option-label{flex:1;font-family:var(--font-b);font-weight:600;font-size:.95rem;color:var(--text)}
+.option-arrow{color:var(--muted);font-size:1rem}
+
+/* GUIDE PAGE */
+.tag-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.guide-tag{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy)}
+.step-lbl{font-size:.82rem;color:var(--muted);font-weight:500}
+.progress-bar{height:4px;background:#e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:26px}
+.progress-fill{height:100%;background:var(--navy);border-radius:4px;transition:width .4s ease}
+.guide-title{font-size:clamp(1.6rem,5vw,2.2rem);font-weight:900;color:var(--navy);margin-bottom:8px}
+.guide-desc{font-size:.92rem;color:var(--muted);line-height:1.65;margin-bottom:22px}
+.steps-list{position:relative}
+.step-item{display:flex;align-items:flex-start;gap:14px;position:relative;padding-bottom:28px}
+.step-item:last-child{padding-bottom:0}
+.step-connector{position:absolute;left:23px;top:52px;width:2px;bottom:0;background:#e2e8f0}
+.step-item:last-child .step-connector{display:none}
+.step-icon-wrap{width:46px;height:46px;min-width:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;z-index:1;position:relative}
+.step-icon-wrap.first{background:var(--navy);color:#fff}
+.step-icon-wrap.rest{background:#e2e8f0;color:var(--muted)}
+.step-title{font-family:var(--font-b);font-size:.95rem;font-weight:600;color:var(--text);margin-bottom:3px;padding-top:10px}
+.step-desc{font-size:.83rem;color:var(--muted);line-height:1.55}
+.sticky-cta{position:sticky;bottom:68px;background:#fff;border-top:1px solid var(--border);padding:14px 20px;z-index:50}
+
+/* EVALUACION PAGE */
+.eval-progress-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.eval-step-lbl{font-size:.88rem;font-weight:600;color:var(--text)}
+.eval-pct{font-size:.82rem;color:var(--muted)}
+.eval-title{font-size:clamp(1.5rem,5vw,2rem);font-weight:900;color:var(--navy);margin-bottom:8px}
+.eval-desc{font-size:.92rem;color:var(--muted);line-height:1.6;margin-bottom:24px}
+.toggle-group{display:flex;background:#f1f5f9;border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:22px}
+.toggle-btn{flex:1;padding:12px;font-family:var(--font-b);font-size:.92rem;font-weight:500;background:transparent;border:none;cursor:pointer;color:var(--muted);transition:all .2s}
+.toggle-btn.on{background:#fff;color:var(--navy);font-weight:600;box-shadow:var(--shadow-sm);border-radius:8px;margin:3px}
+.form-label{display:block;font-family:var(--font-b);font-weight:600;font-size:.95rem;color:var(--text);margin-bottom:9px}
+.form-input{width:100%;padding:13px 15px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-b);font-size:.95rem;color:var(--text);background:#fff;transition:border-color .2s,box-shadow .2s;appearance:none;-webkit-appearance:none;margin-bottom:4px}
+.form-input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(15,32,68,.1)}
+.select-wrap{position:relative;margin-bottom:22px}
+.select-wrap::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.radio-group{display:flex;flex-direction:column;gap:9px;margin-bottom:24px}
+.radio-card{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;background:#fff;border:1.5px solid var(--border);border-radius:var(--r-sm);cursor:pointer;font-family:var(--font-b);font-size:.92rem;color:var(--text);transition:all .2s;text-align:left;width:100%}
+.radio-card.sel{border-color:var(--navy);background:#f0f4ff;font-weight:600}
+.radio-card:hover{border-color:#93aad4}
+.radio-check{color:var(--green);font-weight:700}
+.eval-disclaimer{font-size:.76rem;color:var(--muted);text-align:center;margin-bottom:8px}
+@media(min-width:640px){.radio-group{display:grid;grid-template-columns:repeat(2,1fr)}}
+
+/* ESTIMACION PAGE */
+.est-badge{display:inline-block;background:#f1f5f9;color:var(--muted);font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 14px;border-radius:20px;border:1px solid var(--border)}
+.est-title{font-size:clamp(1.8rem,5vw,2.4rem);font-weight:900;color:var(--navy);text-align:center;margin-bottom:11px}
+.est-sub{text-align:center;font-size:.9rem;color:var(--muted);line-height:1.65;margin-bottom:22px;max-width:400px;margin-left:auto;margin-right:auto}
+.range-card{background:linear-gradient(135deg,#f0fdf9 0%,#e6f7f4 100%);border:1px solid rgba(13,124,102,.2);border-radius:var(--r-lg);padding:28px 22px;text-align:center;margin-bottom:28px}
+.range-lbl{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:14px}
+.range-val{font-family:var(--font-d);font-size:clamp(2rem,7vw,3.2rem);font-weight:900;color:var(--teal);line-height:1.1;margin-bottom:14px}
+.range-check{display:flex;align-items:center;justify-content:center;gap:6px;font-size:.82rem;color:var(--teal);font-weight:500}
+.concepts-hd{font-family:var(--font-b);font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.concepts-list{display:flex;flex-direction:column;gap:9px;margin-bottom:24px}
+.concept-card{display:flex;align-items:flex-start;gap:13px;background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:15px 16px;transition:box-shadow .2s}
+.concept-card:hover{box-shadow:var(--shadow-md)}
+.concept-icon{width:38px;height:38px;min-width:38px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.concept-title{font-family:var(--font-b);font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:2px}
+.concept-desc{font-size:.8rem;color:var(--muted);line-height:1.5}
+.est-cta-block{background:var(--navy);border-radius:var(--r-lg);padding:22px 18px 14px;margin-bottom:14px}
+.est-cta-block .btn{background:transparent;border:2px solid rgba(255,255,255,.3);color:#fff}
+.est-cta-block .btn:hover{background:rgba(255,255,255,.1);transform:none}
+.est-cta-note{text-align:center;font-size:.77rem;color:rgba(255,255,255,.55);margin-top:8px}
+.restart-btn{width:100%;padding:13px;background:transparent;border:1.5px solid var(--border);border-radius:var(--r-md);font-family:var(--font-b);font-size:.9rem;color:var(--muted);cursor:pointer;transition:all .2s}
+.restart-btn:hover{background:var(--bg);color:var(--text)}
+@media(min-width:640px){.concepts-list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}}
+@media(min-width:1024px){.concepts-list{grid-template-columns:repeat(3,1fr)}}
+
+/* ANIMATIONS */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.ani{animation:fadeInUp .35s ease forwards}
+.d1{animation-delay:.05s;opacity:0}
+.d2{animation-delay:.1s;opacity:0}
+.d3{animation-delay:.15s;opacity:0}
+.d4{animation-delay:.2s;opacity:0}
+.d5{animation-delay:.25s;opacity:0}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ======================== PAGE: HOME ======================== -->
+<div id="page-home" class="page active" style="padding-bottom:0">
+  <div class="home-header">
+    <div class="brand">
+      <div class="brand-logo">⚖</div>
+      <div>
+        <div class="brand-name">VM</div>
+        <div class="brand-sub">Estudio Jurídico</div>
+      </div>
+    </div>
+    <button class="btn-outline" style="width:auto;padding:9px 14px;font-size:.85rem;border-radius:9px" onclick="goTo('estudio')">Estudio</button>
+  </div>
+  <div class="home-hero">
+    <div class="home-icon">
+      🚗<div class="alert-dot">!</div>
+    </div>
+    <h1 class="home-title">¿Tuviste un accidente<br>de tránsito?</h1>
+    <p class="home-desc">Conoce tus derechos y los pasos para reclamar tu indemnización de manera profesional y segura.</p>
+  </div>
+  <div class="section" style="padding-top:8px;display:flex;flex-direction:column;gap:11px">
+    <button class="option-card ani d1" onclick="goTo('guia')">
+      <div class="option-icon">👤</div>
+      <span class="option-label">Tuve un accidente</span>
+      <span class="option-arrow">›</span>
+    </button>
+    <button class="option-card ani d2" onclick="goTo('guia')">
+      <div class="option-icon">👨‍👩‍👧</div>
+      <span class="option-label">Soy familiar de una víctima</span>
+      <span class="option-arrow">›</span>
+    </button>
+    <button class="option-card ani d3" onclick="goTo('evaluacion')">
+      <div class="option-icon">📋</div>
+      <span class="option-label">Quiero saber si puedo reclamar</span>
+      <span class="option-arrow">›</span>
+    </button>
+    <button class="btn btn-dark ani d4" style="margin-top:6px" onclick="goTo('guia')">Comenzar guía &nbsp;→</button>
+  </div>
+  <p style="text-align:center;font-size:.77rem;color:var(--muted);padding:16px 20px 88px;line-height:1.6">Asesoramiento legal confidencial.<br>Consulta inicial sin costo.</p>
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="goTo('home')" id="nav-home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Inicio
+    </button>
+    <button class="nav-item" onclick="goTo('estudio')" id="nav-estudio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Estudio
+    </button>
+    <button class="nav-item" onclick="goTo('estimacion')" id="nav-casos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Casos
+    </button>
+    <button class="nav-item" onclick="alert('Perfil próximamente')" id="nav-perfil">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Perfil
+    </button>
+  </nav>
+</div>
+
+<!-- ======================== PAGE: ESTUDIO ======================== -->
+<div id="page-estudio" class="page" style="padding-bottom:76px">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 18px;background:#fff;border-bottom:1px solid var(--border)">
+    <div style="display:flex;align-items:center;gap:9px">
+      <div style="width:38px;height:38px;border-radius:9px;border:2px solid var(--navy);display:flex;align-items:center;justify-content:center;font-size:1.1rem">⚖</div>
+      <span style="font-family:var(--font-d);font-weight:700;font-size:1rem;color:var(--navy)">Estudio Jurídico VYM</span>
+    </div>
+    <button style="width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:1rem" aria-label="Compartir">🔗</button>
+  </div>
+  <!-- Hero -->
+  <div class="hero-banner">
+    <div class="hero-scale">⚖</div>
+    <span class="hero-badge">ESPECIALISTAS</span>
+    <h1 class="hero-title">Expertos en<br>Accidentes de Tránsito</h1>
+    <p class="hero-sub">Protegemos tus derechos con resultados garantizados.</p>
+    <div class="hero-wm">V&M</div>
+  </div>
+  <!-- Features -->
+  <div class="section">
+    <h2 style="font-size:clamp(1.2rem,4vw,1.7rem);font-weight:700;color:var(--navy);margin-bottom:18px;line-height:1.2">Atención personalizada y gestión completa</h2>
+    <div class="features-grid">
+      <div class="feature-card ani d1"><div class="f-icon">💳</div><div><div class="f-title">Consulta sin costo</div><div class="f-desc">Evaluamos tu caso gratis y sin compromiso inicial.</div></div></div>
+      <div class="feature-card ani d2"><div class="f-icon">💼</div><div><div class="f-title">Gestión Integral</div><div class="f-desc">Nos encargamos de todo el papeleo ante aseguradoras.</div></div></div>
+      <div class="feature-card ani d3"><div class="f-icon">🛡️</div><div><div class="f-title">Máxima Experiencia</div><div class="f-desc">+15 años resolviendo reclamos de accidentes.</div></div></div>
+      <div class="feature-card ani d4"><div class="f-icon">🎧</div><div><div class="f-title">Trato Humano</div><div class="f-desc">Atención 24/7 para emergencias legales inmediatas.</div></div></div>
+    </div>
+  </div>
+  <!-- CTAs -->
+  <div class="section" style="padding-top:0;display:flex;flex-direction:column;gap:10px">
+    <button class="btn btn-green" onclick="openWhatsApp()">💬 &nbsp;Contactar por WhatsApp</button>
+    <button class="btn btn-navy" onclick="goTo('evaluacion')">📅 &nbsp;Solicitar consulta</button>
+    <button class="btn btn-outline">📷 &nbsp;Enviar fotos accidente</button>
+  </div>
+  <!-- Quote -->
+  <div class="section" style="padding-top:0">
+    <div class="quote-block">"Si sufriste un accidente, no enfrentes el proceso solo. Nuestro estudio jurídico está aquí para acompañarte y asegurar que recibas la indemnización que te corresponde."</div>
+  </div>
+  <button class="fab" onclick="openWhatsApp()" aria-label="WhatsApp">💬</button>
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <button class="nav-item" onclick="goTo('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Inicio</button>
+    <button class="nav-item active" onclick="goTo('estudio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Estudio</button>
+    <button class="nav-item" onclick="goTo('estimacion')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Casos</button>
+    <button class="nav-item" onclick="alert('Perfil próximamente')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Perfil</button>
+  </nav>
+</div>
+
+<!-- ======================== PAGE: GUIA ======================== -->
+<div id="page-guia" class="page">
+  <div class="top-nav">
+    <button class="top-nav-back" onclick="goBack('guia')">←</button>
+    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.1rem">⚖</span><span class="top-nav-title">Estudio Jurídico VM</span></div>
+    <div style="width:38px"></div>
+  </div>
+  <div class="section" id="guia-content"><!-- dynamic --></div>
+  <div class="sticky-cta"><button class="btn btn-navy" id="guia-next-btn" onclick="guiaNext()">Continuar →</button></div>
+</div>
+
+<!-- ======================== PAGE: EVALUACION ======================== -->
+<div id="page-evaluacion" class="page">
+  <div class="top-nav">
+    <button class="top-nav-back" onclick="goBack('evaluacion')">←</button>
+    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.1rem">⚖</span><span class="top-nav-title">Evaluación del caso</span></div>
+    <div style="width:38px"></div>
+  </div>
+  <div class="section" id="eval-content" style="padding-bottom:120px"><!-- dynamic --></div>
+  <div class="sticky-cta">
+    <p class="eval-disclaimer" id="eval-disclaimer">La estimación se basa en datos históricos y parámetros legales vigentes.</p>
+    <button class="btn btn-navy" id="eval-next-btn" onclick="evalNext()">Continuar →</button>
+  </div>
+</div>
+
+<!-- ======================== PAGE: ESTIMACION ======================== -->
+<div id="page-estimacion" class="page" style="padding-bottom:76px">
+  <div class="top-nav">
+    <button class="top-nav-back" onclick="goTo('evaluacion')">←</button>
+    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.1rem">⚖</span><span class="top-nav-title">Estimación Legal</span></div>
+    <div style="width:38px"></div>
+  </div>
+  <div class="section" id="est-content"><!-- dynamic --></div>
+  <nav class="bottom-nav">
+    <button class="nav-item" onclick="goTo('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Inicio</button>
+    <button class="nav-item" onclick="goTo('estudio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Estudio</button>
+    <button class="nav-item active" onclick="goTo('estimacion')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Casos</button>
+    <button class="nav-item" onclick="alert('Perfil próximamente')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Perfil</button>
+  </nav>
+</div>
+
+</div><!-- #app -->
+
+<script>
+/* ===== STATE ===== */
+const state = {
+  guiaStep: 0,
+  evalStep: 0,
+  evalData: {}
+};
+
+/* ===== NAVIGATION ===== */
+function goTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if (page === 'guia') { state.guiaStep = 0; renderGuia(); }
+  if (page === 'evaluacion') { state.evalStep = 0; renderEval(); }
+  if (page === 'estimacion') { renderEstimacion(); }
+}
+
+function goBack(page) {
+  const map = {guia:'home', evaluacion:'guia', estimacion:'evaluacion'};
+  goTo(map[page] || 'home');
+}
+
+/* ===== WHATSAPP ===== */
+function openWhatsApp() {
+  window.open('https://wa.me/5493624000000?text=Hola,%20quiero%20consultar%20sobre%20mi%20caso%20de%20accidente%20de%20tr%C3%A1nsito.', '_blank');
+}
+
+/* ===== GUIDE ===== */
+const guidePages = [
+  {
+    tag:'GUÍA POST-ACCIDENTE', step:'1 de 3', pct:33,
+    title:'¿Qué hacer ahora?',
+    desc:'Sigue estos pasos fundamentales para asegurar tu integridad y facilitar el reporte del siniestro.',
+    steps:[
+      {icon:'🚑',title:'Llamar a emergencias',desc:'Si hay lesionados, comunícate de inmediato con los servicios médicos.'},
+      {icon:'📷',title:'Tomar fotos del lugar',desc:'Registra los daños de ambos vehículos y el entorno del accidente.'},
+      {icon:'🏷️',title:'Anotar patente',desc:'Asegúrate de registrar la placa patente del otro vehículo involucrado.'},
+      {icon:'👥',title:'Identificar testigos',desc:'Pide nombres y teléfonos de personas que presenciaron el hecho.'},
+      {icon:'🛡️',title:'Pedir datos del seguro',desc:'Solicita la compañía de seguros y datos del conductor del otro vehículo.'},
+    ],
+    btnLabel:'Continuar →'
+  },
+  {
+    tag:'GUÍA POST-ACCIDENTE', step:'2 de 3', pct:66,
+    title:'Documentá todo',
+    desc:'Una buena documentación puede marcar la diferencia en tu reclamo de indemnización.',
+    steps:[
+      {icon:'📷',title:'Fotografías del lugar',desc:'Desde múltiples ángulos y con marcas de tiempo.'},
+      {icon:'🆔',title:'Datos del otro conductor',desc:'DNI, licencia, seguro y matrícula del vehículo.'},
+      {icon:'📄',title:'Acta policial',desc:'Si intervino la policía, solicita copia del acta.'},
+      {icon:'👥',title:'Testigos presenciales',desc:'Nombre y contacto de quienes vieron el accidente.'},
+      {icon:'🏥',title:'Registro médico',desc:'Conserva todas las facturas y certificados de atención.'},
+    ],
+    btnLabel:'Continuar →'
+  },
+  {
+    tag:'GUÍA POST-ACCIDENTE', step:'3 de 3', pct:100,
+    title:'Iniciá tu reclamo',
+    desc:'Con toda la información recopilada, es el momento de iniciar el proceso legal.',
+    steps:null,
+    btnLabel:'Evaluar mi caso →'
+  }
+];
+
+function renderGuia() {
+  const p = guidePages[state.guiaStep];
+  let stepsHtml = '';
+  if (p.steps) {
+    stepsHtml = '<div class="steps-list">' + p.steps.map((s,i) => `
+      <div class="step-item">
+        <div class="step-connector"></div>
+        <div class="step-icon-wrap ${i===0?'first':'rest'}">${s.icon}</div>
+        <div>
+          <div class="step-title">${s.title}</div>
+          <div class="step-desc">${s.desc}</div>
+        </div>
+      </div>`).join('') + '</div>';
+  } else {
+    stepsHtml = `
+      <div style="background:#fff;border-radius:var(--r-lg);padding:28px 22px;text-align:center;border:1px solid var(--border);box-shadow:var(--shadow-md);margin-bottom:18px">
+        <div style="font-size:3rem;margin-bottom:14px">⚖️</div>
+        <h3 style="font-family:var(--font-d);font-size:1.3rem;color:var(--navy);margin-bottom:10px">Estás listo para reclamar</h3>
+        <p style="color:var(--muted);line-height:1.7;font-size:.9rem">Nuestros especialistas evaluarán tu caso y te brindarán una estimación de la indemnización que te corresponde.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        ${['Consulta gratuita y confidencial','Estimación basada en jurisprudencia','+15 años de experiencia','Sin pago anticipado'].map(item=>`
+        <div style="display:flex;align-items:center;gap:11px;background:#fff;padding:13px 15px;border-radius:var(--r-sm);border:1px solid var(--border);font-size:.9rem;font-weight:500">
+          <span style="color:var(--green);font-weight:700">✓</span><span>${item}</span>
+        </div>`).join('')}
+      </div>`;
+  }
+  document.getElementById('guia-content').innerHTML = `
+    <div class="tag-row"><span class="guide-tag">${p.tag}</span><span class="step-lbl">${p.step}</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${p.pct}%"></div></div>
+    <h1 class="guide-title">${p.title}</h1>
+    <p class="guide-desc">${p.desc}</p>
+    ${stepsHtml}
+  `;
+  document.getElementById('guia-next-btn').textContent = p.btnLabel;
+}
+
+function guiaNext() {
+  if (state.guiaStep < 2) { state.guiaStep++; renderGuia(); window.scrollTo({top:0,behavior:'smooth'}); }
+  else { goTo('evaluacion'); }
+}
+
+/* ===== EVALUACION ===== */
+const evalSteps = [
+  {title:'Tipo de accidente',pct:25,desc:'¿Qué tipo de accidente tuviste?',type:'radio',key:'accidentType',options:['Choque frontal','Alcance trasero','Atropellamiento','Vuelco','Otro']},
+  {title:'Responsabilidad',pct:50,desc:'Esta información ayuda a determinar el tipo de reclamo.',type:'toggles',fields:[{label:'¿Eras responsable del accidente?',key:'atFault'},{label:'¿El otro vehículo tenía seguro?',key:'hasInsurance'}]},
+  {title:'Detalles del incidente',pct:75,desc:'Información sobre el incidente.',type:'details'},
+  {title:'Tus datos de contacto',pct:100,desc:'Para enviarte los resultados de la estimación.',type:'contact'},
+];
+
+function renderEval() {
+  const s = evalSteps[state.evalStep];
+  let content = '';
+  if (s.type === 'radio') {
+    content = `<div class="radio-group">${s.options.map(o=>`
+      <button class="radio-card ${state.evalData[s.key]===o?'sel':''}" onclick="setEvalData('${s.key}','${o}');renderEval()">
+        ${o} ${state.evalData[s.key]===o?'<span class="radio-check">✓</span>':''}
+      </button>`).join('')}</div>`;
+  } else if (s.type === 'toggles') {
+    content = s.fields.map(f=>`
+      <div style="margin-bottom:22px">
+        <div class="form-label">${f.label}</div>
+        <div class="toggle-group">
+          <button class="toggle-btn ${state.evalData[f.key]===true?'on':''}" onclick="setEvalData('${f.key}',true);renderEval()">Sí</button>
+          <button class="toggle-btn ${state.evalData[f.key]===false?'on':''}" onclick="setEvalData('${f.key}',false);renderEval()">No</button>
+        </div>
+      </div>`).join('');
+  } else if (s.type === 'details') {
+    content = `
+      <div style="margin-bottom:22px">
+        <div class="form-label">¿Hubo lesionados?</div>
+        <div class="toggle-group">
+          <button class="toggle-btn ${state.evalData.hasInjured===true?'on':''}" onclick="setEvalData('hasInjured',true);renderEval()">Sí</button>
+          <button class="toggle-btn ${state.evalData.hasInjured===false?'on':''}" onclick="setEvalData('hasInjured',false);renderEval()">No</button>
+        </div>
+      </div>
+      <div style="margin-bottom:22px">
+        <div class="form-label">¿Hubo fallecimiento?</div>
+        <div class="toggle-group">
+          <button class="toggle-btn ${state.evalData.hasDeath===true?'on':''}" onclick="setEvalData('hasDeath',true);renderEval()">Sí</button>
+          <button class="toggle-btn ${state.evalData.hasDeath===false?'on':''}" onclick="setEvalData('hasDeath',false);renderEval()">No</button>
+        </div>
+      </div>
+      <div style="margin-bottom:22px">
+        <div class="form-label">¿La víctima fue peatón, conductor o acompañante?</div>
+        <div class="select-wrap">
+          <select class="form-input" onchange="setEvalData('victimType',this.value)">
+            <option value="">Seleccione una opción</option>
+            <option ${state.evalData.victimType==='Peatón'?'selected':''}>Peatón</option>
+            <option ${state.evalData.victimType==='Conductor'?'selected':''}>Conductor</option>
+            <option ${state.evalData.victimType==='Acompañante'?'selected':''}>Acompañante</option>
+            <option ${state.evalData.victimType==='Ciclista'?'selected':''}>Ciclista</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:22px">
+        <div class="form-label">¿Hubo intervención policial?</div>
+        <div class="toggle-group">
+          <button class="toggle-btn ${state.evalData.hasPolice===true?'on':''}" onclick="setEvalData('hasPolice',true);renderEval()">Sí</button>
+          <button class="toggle-btn ${state.evalData.hasPolice===false?'on':''}" onclick="setEvalData('hasPolice',false);renderEval()">No</button>
+        </div>
+      </div>
+      <div style="margin-bottom:22px">
+        <div class="form-label">Edad aproximada de la víctima</div>
+        <input type="number" class="form-input" placeholder="Ej. 35" value="${state.evalData.victimAge||''}" min="0" max="100" onchange="setEvalData('victimAge',this.value)">
+      </div>`;
+  } else if (s.type === 'contact') {
+    content = `
+      <div style="margin-bottom:18px"><div class="form-label">Nombre completo</div><input type="text" class="form-input" placeholder="Ej. Juan Pérez" value="${state.evalData.name||''}" onchange="setEvalData('name',this.value)"></div>
+      <div style="margin-bottom:18px"><div class="form-label">Teléfono / WhatsApp</div><input type="tel" class="form-input" placeholder="Ej. +54 362 4000000" value="${state.evalData.phone||''}" onchange="setEvalData('phone',this.value)"></div>
+      <div style="margin-bottom:18px"><div class="form-label">Email (opcional)</div><input type="email" class="form-input" placeholder="Ej. juan@email.com" value="${state.evalData.email||''}" onchange="setEvalData('email',this.value)"></div>`;
+  }
+  document.getElementById('eval-content').innerHTML = `
+    <div class="eval-progress-row"><span class="eval-step-lbl">Paso ${state.evalStep+1} de 4</span><span class="eval-pct">${s.pct}% completado</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${s.pct}%"></div></div>
+    <h2 class="eval-title">${s.title}</h2>
+    <p class="eval-desc">${s.desc}</p>
+    ${content}
+  `;
+  const btn = document.getElementById('eval-next-btn');
+  if (btn) btn.textContent = state.evalStep < 3 ? 'Continuar →' : 'Ver estimación ↗';
+}
+
+function setEvalData(key, val) { state.evalData[key] = val; }
+
+function evalNext() {
+  if (state.evalStep < 3) { state.evalStep++; renderEval(); window.scrollTo({top:0,behavior:'smooth'}); }
+  else { goTo('estimacion'); }
+}
+
+/* ===== ESTIMACION ===== */
+function calcRange(d) {
+  let min = 500000, max = 1500000;
+  if (d.hasInjured) { min += 200000; max += 500000; }
+  if (d.hasDeath) { min += 500000; max += 2000000; }
+  if (d.hasPolice) { min += 100000; max += 200000; }
+  if (d.victimType === 'Peatón') { min += 300000; max += 600000; }
+  const age = parseInt(d.victimAge || 35);
+  if (age < 30) { min += 200000; max += 400000; }
+  if (age > 60) { max += 200000; }
+  return { min: min.toLocaleString('es-AR'), max: max.toLocaleString('es-AR') };
+}
+
+function renderEstimacion() {
+  const r = calcRange(state.evalData);
+  const concepts = [
+    {icon:'🧠',title:'Daño moral',desc:'Compensación por el sufrimiento y angustia padecida.'},
+    {icon:'🩺',title:'Gastos médicos',desc:'Reintegro de tratamientos, medicamentos y traslados.'},
+    {icon:'📉',title:'Lucro cesante',desc:'Ingresos perdidos durante el tiempo de recuperación.'},
+    {icon:'♿',title:'Incapacidad sobreviniente',desc:'Secuelas físicas o psíquicas permanentes tras el hecho.'},
+    {icon:'💸',title:'Perjuicio económico',desc:'Daños materiales directos sobre tus bienes.'},
+  ];
+  document.getElementById('est-content').innerHTML = `
+    <div style="text-align:center;margin-bottom:14px"><span class="est-badge">ANÁLISIS V&M COMPLETADO</span></div>
+    <h1 class="est-title">Resultados de tu caso</h1>
+    <p class="est-sub">Según el análisis de nuestros expertos legales en V&M y jurisprudencia en Argentina, tu indemnización estimada es:</p>
+    <div class="range-card">
+      <div class="range-lbl">RANGO ESTIMADO</div>
+      <div class="range-val">$${r.min} -<br>$${r.max}</div>
+      <div class="range-check">✅ Basado en jurisprudencia actualizada</div>
+    </div>
+    <h2 class="concepts-hd">⊞ Conceptos incluidos</h2>
+    <div class="concepts-list">
+      ${concepts.map((c,i)=>`
+      <div class="concept-card ani" style="animation-delay:${i*.06}s">
+        <div class="concept-icon">${c.icon}</div>
+        <div><div class="concept-title">${c.title}</div><div class="concept-desc">${c.desc}</div></div>
+      </div>`).join('')}
+    </div>
+    <div class="est-cta-block">
+      <button class="btn" onclick="openWhatsApp()">🎧 &nbsp;Hablar con un especialista de V&M</button>
+      <p class="est-cta-note">Consulta gratuita y confidencial</p>
+    </div>
+    <button class="restart-btn" onclick="goTo('home');state.evalData={}">Evaluar otro caso</button>
+  `;
+}
+
+/* Init */
+renderGuia();
+renderEval();
+</script>
+</body>
+</html>
