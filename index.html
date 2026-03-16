@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Estudio Jurídico VYM — Accidentes de Tránsito</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  (function(){
+    emailjs.init({ publicKey: "Z50PTl8v6cN4uVXdK" });
+  })();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -252,7 +258,7 @@ h1,h2,h3{font-family:var(--font-d);line-height:1.15}
     <div class="features-grid">
       <div class="feature-card ani d1"><div class="f-icon">💳</div><div><div class="f-title">Consulta sin costo</div><div class="f-desc">Evaluamos tu caso gratis y sin compromiso inicial.</div></div></div>
       <div class="feature-card ani d2"><div class="f-icon">💼</div><div><div class="f-title">Gestión Integral</div><div class="f-desc">Nos encargamos de todo el papeleo ante aseguradoras.</div></div></div>
-      <div class="feature-card ani d3"><div class="f-icon">🛡️</div><div><div class="f-title">Máxima Experiencia</div><div class="f-desc">+15 años resolviendo reclamos de accidentes.</div></div></div>
+      <div class="feature-card ani d3"><div class="f-icon">🛡️</div><div><div class="f-title">Máxima Experiencia</div><div class="f-desc">Alta experiencia en resolución de reclamos por accidentes de tránsito.</div></div></div>
       <div class="feature-card ani d4"><div class="f-icon">🎧</div><div><div class="f-title">Trato Humano</div><div class="f-desc">Atención 24/7 para emergencias legales inmediatas.</div></div></div>
     </div>
   </div>
@@ -428,7 +434,7 @@ function guiaNext() {
 
 /* ===== EVALUACION ===== */
 const evalSteps = [
-  {title:'Tipo de accidente',pct:25,desc:'¿Qué tipo de accidente tuviste?',type:'radio',key:'accidentType',options:['Choque frontal','Alcance trasero','Atropellamiento','Vuelco','Otro']},
+  {title:'Tipo de accidente',pct:25,desc:'¿En qué condición estabas al momento del accidente?',type:'radio',key:'accidentType',options:['Automóvil','Motociclista','Peatón','Bicicleta / monopatín','Vehículo de trabajo (camión, utilitario, colectivo)','Otro']},
   {title:'Responsabilidad',pct:50,desc:'Esta información ayuda a determinar el tipo de reclamo.',type:'toggles',fields:[{label:'¿Eras responsable del accidente?',key:'atFault'},{label:'¿El otro vehículo tenía seguro?',key:'hasInsurance'}]},
   {title:'Detalles del incidente',pct:75,desc:'Información sobre el incidente.',type:'details'},
   {title:'Tus datos de contacto',pct:100,desc:'Para enviarte los resultados de la estimación.',type:'contact'},
@@ -510,8 +516,47 @@ function renderEval() {
 function setEvalData(key, val) { state.evalData[key] = val; }
 
 function evalNext() {
-  if (state.evalStep < 3) { state.evalStep++; renderEval(); window.scrollTo({top:0,behavior:'smooth'}); }
-  else { goTo('estimacion'); }
+  if (state.evalStep < 3) {
+    state.evalStep++;
+    renderEval();
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else {
+    sendFormEmail();
+  }
+}
+
+function sendFormEmail() {
+  const d = state.evalData;
+  const r = calcRange(d);
+  const btn = document.getElementById('eval-next-btn');
+  if (btn) { btn.textContent = 'Enviando...'; btn.disabled = true; }
+
+  const templateParams = {
+    to_email: 'estudiojuridicovymrcia@gmail.com',
+    nombre:        d.name    || 'No indicado',
+    telefono:      d.phone   || 'No indicado',
+    email_cliente: d.email   || 'No indicado',
+    tipo_accidente:   d.accidentType || 'No indicado',
+    responsable:      d.atFault === true ? 'Sí' : d.atFault === false ? 'No' : 'No indicado',
+    seguro_otro:      d.hasInsurance === true ? 'Sí' : d.hasInsurance === false ? 'No' : 'No indicado',
+    lesionados:       d.hasInjured === true ? 'Sí' : d.hasInjured === false ? 'No' : 'No indicado',
+    fallecimiento:    d.hasDeath === true ? 'Sí' : d.hasDeath === false ? 'No' : 'No indicado',
+    tipo_victima:     d.victimType || 'No indicado',
+    policia:          d.hasPolice === true ? 'Sí' : d.hasPolice === false ? 'No' : 'No indicado',
+    edad_victima:     d.victimAge  || 'No indicado',
+    rango_min:        '$' + r.min,
+    rango_max:        '$' + r.max,
+    fecha:            new Date().toLocaleString('es-AR'),
+  };
+
+  emailjs.send('service_bpo1xqq', 'template_g6hoip9', templateParams)
+    .then(() => {
+      goTo('estimacion');
+    })
+    .catch((err) => {
+      console.error('EmailJS error:', err);
+      goTo('estimacion');
+    });
 }
 
 /* ===== ESTIMACION ===== */
