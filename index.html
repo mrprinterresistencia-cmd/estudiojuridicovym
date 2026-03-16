@@ -266,7 +266,7 @@ h1,h2,h3{font-family:var(--font-d);line-height:1.15}
   <div class="section" style="padding-top:0;display:flex;flex-direction:column;gap:10px">
     <button class="btn btn-green" onclick="openWhatsApp()">💬 &nbsp;Contactar por WhatsApp</button>
     <button class="btn btn-navy" onclick="goTo('evaluacion')">📅 &nbsp;Solicitar consulta</button>
-    <button class="btn btn-outline">📷 &nbsp;Enviar fotos accidente</button>
+    <button class="btn btn-outline" onclick="openFotoModal()">📷 &nbsp;Enviar fotos accidente</button>
   </div>
   <!-- Quote -->
   <div class="section" style="padding-top:0">
@@ -549,7 +549,7 @@ function sendFormEmail() {
     fecha:            new Date().toLocaleString('es-AR'),
   };
 
-  emailjs.send('service_bpo1xqq', 'template_g6hoip9', templateParams)
+  emailjs.send('service_bpo1xqq', 'template_0yt7a5o', templateParams)
     .then(() => {
       goTo('estimacion');
     })
@@ -609,6 +609,139 @@ function renderEstimacion() {
 /* Init */
 renderGuia();
 renderEval();
+
+/* ===== FOTO MODAL ===== */
+let fotosSeleccionadas = [];
+
+function openFotoModal() {
+  const modal = document.getElementById('foto-modal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  // reset
+  document.getElementById('foto-nombre').value = '';
+  document.getElementById('foto-telefono').value = '';
+  document.getElementById('foto-descripcion').value = '';
+  document.getElementById('foto-preview').innerHTML = '';
+  document.getElementById('foto-count').textContent = '';
+  document.getElementById('foto-error').style.display = 'none';
+  document.getElementById('foto-success').style.display = 'none';
+  document.getElementById('foto-submit-btn').style.display = 'flex';
+  fotosSeleccionadas = [];
+}
+
+function closeFotoModal() {
+  document.getElementById('foto-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function handleFotos(input) {
+  const files = Array.from(input.files);
+  const maxFiles = 5;
+  const maxSize = 5 * 1024 * 1024;
+  const errEl = document.getElementById('foto-error');
+  errEl.style.display = 'none';
+
+  for (let f of files) {
+    if (fotosSeleccionadas.length >= maxFiles) {
+      errEl.textContent = 'Máximo 5 fotos permitidas.';
+      errEl.style.display = 'block';
+      break;
+    }
+    if (f.size > maxSize) {
+      errEl.textContent = `La foto "${f.name}" supera los 5MB.`;
+      errEl.style.display = 'block';
+      continue;
+    }
+    fotosSeleccionadas.push(f);
+  }
+
+  renderFotoPreview();
+  document.getElementById('foto-count').textContent =
+    fotosSeleccionadas.length > 0 ? fotosSeleccionadas.length + ' foto(s) seleccionada(s)' : '';
+}
+
+function renderFotoPreview() {
+  const preview = document.getElementById('foto-preview');
+  preview.innerHTML = '';
+  fotosSeleccionadas.forEach((f, i) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;width:72px;height:72px';
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.cssText = 'width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--border)';
+      const del = document.createElement('button');
+      del.innerHTML = '✕';
+      del.style.cssText = 'position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--navy);color:#fff;border:none;cursor:pointer;font-size:.65rem;display:flex;align-items:center;justify-content:center';
+      del.onclick = () => { fotosSeleccionadas.splice(i, 1); renderFotoPreview(); document.getElementById('foto-count').textContent = fotosSeleccionadas.length + ' foto(s) seleccionada(s)'; };
+      wrap.appendChild(img);
+      wrap.appendChild(del);
+      preview.appendChild(wrap);
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+async function submitFotos() {
+  const nombre    = document.getElementById('foto-nombre').value.trim();
+  const telefono  = document.getElementById('foto-telefono').value.trim();
+  const desc      = document.getElementById('foto-descripcion').value.trim();
+  const errEl     = document.getElementById('foto-error');
+  errEl.style.display = 'none';
+
+  if (!nombre) { errEl.textContent = 'Por favor ingresá tu nombre.'; errEl.style.display = 'block'; return; }
+  if (!telefono) { errEl.textContent = 'Por favor ingresá tu teléfono.'; errEl.style.display = 'block'; return; }
+  if (fotosSeleccionadas.length === 0) { errEl.textContent = 'Por favor seleccioná al menos una foto.'; errEl.style.display = 'block'; return; }
+
+  const btn = document.getElementById('foto-submit-btn');
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+
+  // Convert fotos to base64
+  const fotosB64 = await Promise.all(fotosSeleccionadas.map(f => new Promise((res) => {
+    const r = new FileReader();
+    r.onload = e => res({ name: f.name, data: e.target.result });
+    r.readAsDataURL(f);
+  })));
+
+  // Build foto links text (EmailJS no soporta adjuntos, enviamos como links de data o descripción)
+  const fotosTexto = fotosB64.map((f, i) => `Foto ${i+1}: ${f.name}`).join('\n');
+
+  const templateParams = {
+    to_email:    'estudiojuridicovymrcia@gmail.com',
+    nombre:      nombre,
+    telefono:    telefono,
+    descripcion: desc || 'No indicada',
+    cantidad_fotos: fotosSeleccionadas.length.toString(),
+    nombres_fotos:  fotosTexto,
+    fecha:       new Date().toLocaleString('es-AR'),
+    foto_1: fotosB64[0] ? fotosB64[0].data : '',
+    foto_2: fotosB64[1] ? fotosB64[1].data : '',
+    foto_3: fotosB64[2] ? fotosB64[2].data : '',
+    foto_4: fotosB64[3] ? fotosB64[3].data : '',
+    foto_5: fotosB64[4] ? fotosB64[4].data : '',
+  };
+
+  emailjs.send('service_bpo1xqq', 'template_g6hoip9', templateParams)
+    .then(() => {
+      btn.style.display = 'none';
+      document.getElementById('foto-success').style.display = 'block';
+      setTimeout(() => closeFotoModal(), 3500);
+    })
+    .catch((err) => {
+      console.error(err);
+      errEl.textContent = 'Hubo un error al enviar. Por favor intentá de nuevo o contactanos por WhatsApp.';
+      errEl.style.display = 'block';
+      btn.textContent = '📤 Enviar fotos al estudio';
+      btn.disabled = false;
+    });
+}
+
+// Close modal clicking outside
+document.getElementById('foto-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeFotoModal();
+});
 </script>
 </body>
 </html>
