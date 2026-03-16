@@ -460,7 +460,7 @@ const guidePages = [
       {icon:'📷',title:'Tomar fotos del lugar',desc:'Registra los daños de ambos vehículos y el entorno del accidente.'},
       {icon:'🏷️',title:'Anotar patente',desc:'Asegúrate de registrar la placa patente del otro vehículo involucrado.'},
       {icon:'👥',title:'Identificar testigos',desc:'Pide nombres y teléfonos de personas que presenciaron el hecho.'},
-      {icon:'🛡️',title:'Pedir datos del seguro',desc:'Solicita la compañía de seguros y datos del conductor del otro vehículo.'},
+      {icon:'🛡️',title:'Pedir datos del seguro',desc:'Anotá y guardá evidencia: patente, foto del seguro vigente, foto del DNI del conductor, nombre y teléfono de contacto, compañía de seguro y número de póliza. Sacá fotos de todos los documentos y del vehículo.'},
     ],
     btnLabel:'Continuar →'
   },
@@ -470,7 +470,7 @@ const guidePages = [
     desc:'Una buena documentación puede marcar la diferencia en tu reclamo de indemnización.',
     steps:[
       {icon:'📷',title:'Fotografías del lugar',desc:'Desde múltiples ángulos y con marcas de tiempo.'},
-      {icon:'🆔',title:'Datos del otro conductor',desc:'DNI, licencia, seguro y matrícula del vehículo.'},
+      {icon:'🆔',title:'Datos del otro conductor',desc:'DNI, licencia, seguro y patente del vehículo.'},
       {icon:'📄',title:'Acta policial',desc:'Si intervino la policía, solicita copia del acta.'},
       {icon:'👥',title:'Testigos presenciales',desc:'Nombre y contacto de quienes vieron el accidente.'},
       {icon:'🏥',title:'Registro médico',desc:'Conserva todas las facturas y certificados de atención.'},
@@ -496,7 +496,7 @@ function renderGuia() {
         <div class="step-icon-wrap ${i===0?'first':'rest'}">${s.icon}</div>
         <div>
           <div class="step-title">${s.title}</div>
-          <div class="step-desc">${s.desc}</div>
+          <div class="step-desc" style="white-space:pre-line">${s.desc}</div>
         </div>
       </div>`).join('') + '</div>';
   } else {
